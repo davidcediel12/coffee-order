@@ -20,7 +20,7 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
     private final OrderItemJpaRepository orderItemJpaRepository;
 
     @Override
-    public List<OrderItem> saveAll(List<OrderItem> orderItems) {
+    public List<OrderItem> saveAll(Iterable<OrderItem> orderItems) {
         return orderItemJpaRepository.saveAll(orderItems);
     }
 }
