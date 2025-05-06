@@ -3,15 +3,17 @@ package com.cordilleracoffee.order.domain.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "order")
+@Table(name = "orders")
 public class Order {
     @Id
     @Column(name = "id", nullable = false)
@@ -31,5 +33,8 @@ public class Order {
 
     @OneToMany(mappedBy = "order")
     private Set<OrderItem> orderItems;
+
+    @CreationTimestamp
+    private Instant createdAt;
 
 }
