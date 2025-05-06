@@ -1,6 +1,7 @@
 package com.cordilleracoffee.order.application.impl;
 
 
+import com.cordilleracoffee.order.application.CreateOrderService;
 import com.cordilleracoffee.order.application.mapper.OrderMapper;
 import com.cordilleracoffee.order.domain.model.Order;
 import com.cordilleracoffee.order.domain.repository.OrderItemRepository;
@@ -17,13 +18,13 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
-public class CreateOrderServiceImpl {
+public class CreateOrderServiceImpl implements CreateOrderService {
 
     private final OrderMapper orderMapper;
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
 
-
+    @Override
     public void createOrder(CheckoutPerformed checkoutPerformed) {
 
         Order order = orderMapper.toDomain(checkoutPerformed);
