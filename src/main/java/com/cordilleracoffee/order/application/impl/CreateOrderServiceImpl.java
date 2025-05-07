@@ -3,6 +3,7 @@ package com.cordilleracoffee.order.application.impl;
 
 import com.cordilleracoffee.order.application.CreateOrderService;
 import com.cordilleracoffee.order.application.mapper.OrderMapper;
+import com.cordilleracoffee.order.application.port.OrderEventSender;
 import com.cordilleracoffee.order.domain.model.Order;
 import com.cordilleracoffee.order.domain.model.OrderItem;
 import com.cordilleracoffee.order.domain.repository.OrderItemRepository;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,6 +28,7 @@ public class CreateOrderServiceImpl implements CreateOrderService {
     private final OrderMapper orderMapper;
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
+    private final OrderEventSender orderEventSender;
 
     @Override
     public void createOrder(CheckoutPerformed checkoutPerformed) {
@@ -41,6 +44,11 @@ public class CreateOrderServiceImpl implements CreateOrderService {
             orderItem.setOrder(order);
         }
         orderItemRepository.saveAll(orderItems);
+
+        order.setOrderItems(new HashSet<>(orderItems));
+
+        orderEventSender.sendNewOrder(order);
+
 
         log.info("Order {} was created successfully", order.getId());
     }
