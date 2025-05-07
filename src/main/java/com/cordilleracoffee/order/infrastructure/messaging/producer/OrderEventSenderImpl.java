@@ -3,7 +3,9 @@ package com.cordilleracoffee.order.infrastructure.messaging.producer;
 import com.cordilleracoffee.order.application.port.OrderEventSender;
 import com.cordilleracoffee.order.domain.model.Order;
 import com.cordilleracoffee.order.domain.model.OrderEvent;
+import com.cordilleracoffee.order.infrastructure.messaging.producer.dto.OrderDto;
 import com.cordilleracoffee.order.infrastructure.messaging.producer.dto.OrderMessage;
+import com.cordilleracoffee.order.infrastructure.messaging.producer.mappers.OrderMessageMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -27,9 +29,11 @@ public class OrderEventSenderImpl implements OrderEventSender {
 
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper objectMapper;
+    private final OrderMessageMapper orderMessageMapper;
 
     @Override
     public void sendNewOrder(Order order) {
+
 
         MessageHeaders headers = new MessageHeaders(Map.of(
                 KafkaHeaders.TOPIC, ORDER_TOPIC,
@@ -37,10 +41,13 @@ public class OrderEventSenderImpl implements OrderEventSender {
 
 
         try {
-            kafkaTemplate.send(new GenericMessage<>(objectMapper.writeValueAsString(
-                    new OrderMessage(OrderEvent.ORDER_CREATED, order)),
-                    headers));
+            OrderDto orderDto = orderMessageMapper.toOrderMessage(order);
 
+            OrderMessage orderMessage = new OrderMessage(OrderEvent.ORDER_CREATED, orderDto);
+
+            kafkaTemplate.send(new GenericMessage<>(objectMapper.writeValueAsString(orderMessage), headers));
+
+            log.info("Order creation event sent for order ID: {}", order.getId());
         } catch (JsonProcessingException e) {
             log.error("Error serializing order message", e);
             throw new RuntimeException(e);
