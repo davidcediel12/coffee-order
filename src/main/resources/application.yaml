@@ -9,7 +9,7 @@ spring:
       show-sql: true
 
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/cordillera-coffee?currentSchema=order
+    url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?currentSchema=order
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
 
